@@ -1,0 +1,123 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_TRAINS 5
+#define MAX_STATIONS 10
+#define MAX_SEATS 50
+
+struct Train {
+    int trainNumber;
+    char source[50];
+    char destination[50];
+    int seatsAvailable[MAX_SEATS];
+};
+
+struct Train trains[MAX_TRAINS];
+
+void initializeTrains() {
+    // Initialize trains and seat availability
+    for (int i = 0; i < MAX_TRAINS; i++) {
+        trains[i].trainNumber = 1001 + i;
+        sprintf(trains[i].source, "Source%d", i + 1);
+        sprintf(trains[i].destination, "Destination%d", i + 1);
+
+        for (int j = 0; j < MAX_SEATS; j++) {
+            trains[i].seatsAvailable[j] = 1;  // 1 indicates available seat
+        }
+    }
+}
+
+void displayTrains() {
+    printf("\n--- Available Trains ---\n");
+    for (int i = 0; i < MAX_TRAINS; i++) {
+        printf("Train %d: %s to %s\n", trains[i].trainNumber, trains[i].source, trains[i].destination);
+    }
+    printf("------------------------\n");
+}
+
+int bookTicket(int trainIndex) {
+    int seatNumber = -1;
+
+    for (int i = 0; i < MAX_SEATS; i++) {
+        if (trains[trainIndex].seatsAvailable[i] == 1) {
+            seatNumber = i + 1;
+            trains[trainIndex].seatsAvailable[i] = 0;  // Mark seat as booked
+            break;
+        }
+    }
+
+    return seatNumber;
+}
+
+void cancelTicket(int trainIndex, int seatNumber) {
+    if (seatNumber > 0 && seatNumber <= MAX_SEATS) {
+        trains[trainIndex].seatsAvailable[seatNumber - 1] = 1;  // Mark seat as available
+        printf("Ticket canceled successfully.\n");
+    } else {
+        printf("Invalid seat number.\n");
+    }
+}
+
+int main() {
+    initializeTrains();
+
+    int choice;
+    do {
+        printf("\nRailway Reservation System\n");
+        printf("1. Display Available Trains\n");
+        printf("2. Book Ticket\n");
+        printf("3. Cancel Ticket\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                displayTrains();
+                break;
+
+            case 2: {
+                int trainIndex, seatNumber;
+                printf("Enter the train number: ");
+                scanf("%d", &trainIndex);
+                trainIndex -= 1001;  // Adjust index for array
+                if (trainIndex >= 0 && trainIndex < MAX_TRAINS) {
+                    seatNumber = bookTicket(trainIndex);
+                    if (seatNumber > 0) {
+                        printf("Ticket booked successfully. Seat Number: %d\n", seatNumber);
+                    } else {
+                        printf("Sorry, no available seats on this train.\n");
+                    }
+                } else {
+                    printf("Invalid train number.\n");
+                }
+                break;
+            }
+
+            case 3: {
+                int trainIndex, seatNumber;
+                printf("Enter the train number: ");
+                scanf("%d", &trainIndex);
+                trainIndex -= 1001;  // Adjust index for array
+                if (trainIndex >= 0 && trainIndex < MAX_TRAINS) {
+                    printf("Enter the seat number: ");
+                    scanf("%d", &seatNumber);
+                    cancelTicket(trainIndex, seatNumber);
+                } else {
+                    printf("Invalid train number.\n");
+                }
+                break;
+            }
+
+            case 4:
+                printf("Exiting the program. Thank you!\n");
+                break;
+
+            default:
+                printf("Invalid choice. Please enter a valid option.\n");
+        }
+
+    } while (choice != 4);
+
+    return 0;
+}
