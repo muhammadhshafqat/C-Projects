@@ -1,0 +1,40 @@
+#include <stdio.h>
+
+// Function to calculate BMI
+double calculateBMI(double weight, double height) {
+    return weight / (height * height);
+}
+
+int main() {
+    double weight, height;
+
+    // Get user input for weight and height
+    printf("Enter your weight in kilograms: ");
+    scanf("%lf", &weight);
+
+    printf("Enter your height in meters: ");
+    scanf("%lf", &height);
+
+    if (weight <= 0 || height <= 0) {
+        printf("Invalid input. Weight and height must be positive.\n");
+    } else {
+        // Calculate BMI
+        double bmi = calculateBMI(weight, height);
+
+        // Display the result
+        printf("Your BMI is: %.2lf\n", bmi);
+
+        // Interpret BMI categories
+        if (bmi < 18.5) {
+            printf("You are underweight.\n");
+        } else if (bmi >= 18.5 && bmi < 25.0) {
+            printf("You have a normal weight.\n");
+        } else if (bmi >= 25.0 && bmi < 30.0) {
+            printf("You are overweight.\n");
+        } else {
+            printf("You are obese.\n");
+        }
+    }
+
+    return 0;
+}
