@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_MOVIES 50
+
+struct Movie {
+    char title[100];
+    char director[50];
+    int year;
+};
+
+void displayMovies(const struct Movie movies[], int numMovies) {
+    printf("\n--- Movie Database ---\n");
+    for (int i = 0; i < numMovies; i++) {
+        printf("Title: %s\n", movies[i].title);
+        printf("Director: %s\n", movies[i].director);
+        printf("Year: %d\n", movies[i].year);
+        printf("------------------------\n");
+    }
+}
+
+int main() {
+    struct Movie movies[MAX_MOVIES];
+    int numMovies = 0;
+
+    int choice;
+
+    do {
+        printf("\nMovie Database System\n");
+        printf("1. Display Movies\n");
+        printf("2. Add Movie\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                displayMovies(movies, numMovies);
+                break;
+
+            case 2:
+                if (numMovies < MAX_MOVIES) {
+                    printf("Enter movie title: ");
+                    scanf("%s", movies[numMovies].title);
+                    printf("Enter director name: ");
+                    scanf("%s", movies[numMovies].director);
+                    printf("Enter release year: ");
+                    scanf("%d", &movies[numMovies].year);
+
+                    numMovies++;
+
+                    printf("Movie added successfully!\n");
+                } else {
+                    printf("Maximum number of movies reached.\n");
+                }
+                break;
+
+            case 3:
+                printf("Exiting the program. Thank you!\n");
+                break;
+
+            default:
+                printf("Invalid choice. Please enter a valid option.\n");
+        }
+
+    } while (choice != 3);
+
+    return 0;
+}
