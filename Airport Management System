@@ -1,0 +1,168 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_AIRPORTS 10
+#define MAX_FLIGHTS_PER_AIRPORT 5
+#define MAX_PASSENGERS_PER_FLIGHT 100
+#define MAX_NAME_LENGTH 50
+#define MAX_USERNAME_LENGTH 20
+#define MAX_PASSWORD_LENGTH 20
+
+struct Passenger {
+    char name[MAX_NAME_LENGTH];
+    char contactNumber[15];
+    int seatNumber;
+};
+
+struct Flight {
+    char flightCode[10];
+    char destination[MAX_NAME_LENGTH];
+    int maxCapacity;
+    int currentPassengers;
+    char status[15]; // On Time/Delayed
+    char departureTime[10]; // HH:MM format
+    struct Passenger passengers[MAX_PASSENGERS_PER_FLIGHT];
+};
+
+struct Airport {
+    char airportCode[5];
+    char airportName[MAX_NAME_LENGTH];
+    struct Flight flights[MAX_FLIGHTS_PER_AIRPORT];
+    int numFlights;
+};
+
+void clearConsole() {
+    printf("\033[H\033[J"); // ANSI escape code to clear the console screen
+}
+
+void displayPassengerInfo(const struct Flight *flight, const struct Passenger *passenger) {
+    printf("\n--- Passenger Information ---\n");
+    printf("Flight: %s\n", flight->flightCode);
+    printf("Seat Number: %d\n", passenger->seatNumber);
+    printf("Name: %s\n", passenger->name);
+    printf("Contact Number: %s\n", passenger->contactNumber);
+    printf("-------------------------------\n");
+}
+
+void showFlights(const struct Airport airports[], int numAirports) {
+    clearConsole();
+    printf("=====================================\n");
+    printf("        Airport Information\n");
+    printf("=====================================\n");
+
+    for (int i = 0; i < numAirports; i++) {
+        printf("Airport %s - %s\n", airports[i].airportCode, airports[i].airportName);
+
+        if (airports[i].numFlights == 0) {
+            printf("   No flights available.\n");
+        } else {
+            for (int j = 0; j < airports[i].numFlights; j++) {
+                printf("   Flight %s to %s (%d/%d passengers, %s, Departure Time: %s)\n",
+                       airports[i].flights[j].flightCode, airports[i].flights[j].destination,
+                       airports[i].flights[j].currentPassengers, airports[i].flights[j].maxCapacity,
+                       airports[i].flights[j].status, airports[i].flights[j].departureTime);
+
+                if (airports[i].flights[j].currentPassengers > 0) {
+                    printf("      Passengers:\n");
+                    for (int k = 0; k < airports[i].flights[j].currentPassengers; k++) {
+                        printf("         %d. %s (Seat %d)\n", k + 1,
+                               airports[i].flights[j].passengers[k].name,
+                               airports[i].flights[j].passengers[k].seatNumber);
+                    }
+                } else {
+                    printf("      No passengers on this flight.\n");
+                }
+            }
+        }
+        printf("=====================================\n");
+    }
+}
+
+int findAirportIndex(const struct Airport airports[], int numAirports, const char *airportCode) {
+    for (int i = 0; i < numAirports; i++) {
+        if (strcmp(airports[i].airportCode, airportCode) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+int findFlightIndex(const struct Flight *flights, int numFlights, const char *flightCode) {
+    for (int i = 0; i < numFlights; i++) {
+        if (strcmp(flights[i].flightCode, flightCode) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void addPassengerToFlight(struct Flight *flight, struct Passenger *passenger) {
+    if (flight->currentPassengers < flight->maxCapacity) {
+        strcpy(flight->passengers[flight->currentPassengers].name, passenger->name);
+        strcpy(flight->passengers[flight->currentPassengers].contactNumber, passenger->contactNumber);
+        flight->currentPassengers++;
+        passenger->seatNumber = flight->currentPassengers;
+
+        printf("Passenger %s checked in for the flight %s. Seat Number: %d\n",
+               passenger->name, flight->flightCode, passenger->seatNumber);
+    } else {
+        printf("Flight %s is full. Cannot check in more passengers.\n", flight->flightCode);
+    }
+}
+
+void addNewAirport(struct Airport airports[], int *numAirports) {
+    if (*numAirports < MAX_AIRPORTS) {
+        clearConsole();
+        printf("=====================================\n");
+        printf("           Add New Airport\n");
+        printf("=====================================\n");
+        printf("Enter airport code: ");
+        scanf("%s", airports[*numAirports].airportCode);
+        printf("Enter airport name: ");
+        scanf("%s", airports[*numAirports].airportName);
+        airports[*numAirports].numFlights = 0;
+
+        (*numAirports)++;
+
+        printf("\nAirport added successfully!\n");
+        getchar(); // To capture the Enter key
+        getchar(); // To wait for user input before clearing the console
+    } else {
+        printf("\nMaximum number of airports reached.\n");
+        getchar();
+        getchar();
+    }
+}
+
+void addNewFlight(struct Airport airports[], int *numAirports, const char *airportCode) {
+    int airportIndex = findAirportIndex(airports, *numAirports, airportCode);
+    if (airportIndex != -1) {
+        if (airports[airportIndex].numFlights < MAX_FLIGHTS_PER_AIRPORT) {
+            clearConsole();
+            printf("=====================================\n");
+            printf("      Add New Flight to Airport\n");
+            printf("=====================================\n");
+            printf("Enter flight code: ");
+            scanf("%s", airports[airportIndex].flights[airports[airportIndex].numFlights].flightCode);
+            printf("Enter destination: ");
+            scanf("%s", airports[airportIndex].flights[airports[airportIndex].numFlights].destination);
+            printf("Enter maximum capacity: ");
+            scanf("%d", &airports[airportIndex].flights[airports[airportIndex].numFlights].maxCapacity);
+            airports[airportIndex].flights[airports[airportIndex].numFlights].currentPassengers = 0;
+
+            airports[airportIndex].numFlights++;
+
+            printf("\nFlight added successfully!\n");
+            getchar(); // To capture the Enter key
+            getchar(); // To wait for user input before clearing the console
+        } else {
+            printf("\nMaximum number of flights for this airport reached.\n");
+            getchar();
+            getchar();
+        }
+    } else {
+        printf("\nAirport not found.\n");
+        getchar();
+        getchar();
+    }
