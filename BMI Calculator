@@ -4,7 +4,6 @@
 double calculateBMI(double weight, double height) {
     return weight / (height * height);
 }
-
 int main() {
     double weight, height;
 
