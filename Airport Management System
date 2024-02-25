@@ -8,7 +8,6 @@
 #define MAX_NAME_LENGTH 50
 #define MAX_USERNAME_LENGTH 20
 #define MAX_PASSWORD_LENGTH 20
-
 struct Passenger {
     char name[MAX_NAME_LENGTH];
     char contactNumber[15];
