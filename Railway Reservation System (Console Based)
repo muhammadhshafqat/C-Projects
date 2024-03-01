@@ -9,6 +9,7 @@ struct Train {
     char destination[50];
     int seatsAvailable[MAX_SEATS];
 };
+
 struct Train trains[MAX_TRAINS];
 void initializeTrains() {
     // Initialize trains and seat availability
