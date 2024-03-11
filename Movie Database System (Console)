@@ -3,7 +3,6 @@
 #include <string.h>
 
 #define MAX_MOVIES 50
-
 struct Movie {
     char title[100];
     char director[50];
